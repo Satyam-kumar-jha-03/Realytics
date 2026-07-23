@@ -62,6 +62,7 @@
             bottom: 0;
             overflow-y: auto;
             transition: transform 0.3s ease;
+            z-index: 50;
         }
 
         .sidebar h3 {
@@ -127,12 +128,6 @@
             gap: 16px;
         }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-            text-decoration: none;
-        }
         .logo-image {
             height: 40px;
             width: auto;
@@ -156,6 +151,37 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 60;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-secondary);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         /* Model Status Indicator */
@@ -212,7 +238,9 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Profile Section */
+        /* ============================================
+           PREMIUM PROFILE SECTION
+        ============================================ */
         .profile-section {
             position: relative;
         }
@@ -221,81 +249,244 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 12px 6px 8px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            padding: 5px 14px 5px 5px;
+            background: rgba(22, 27, 41, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 40px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
         }
 
         .profile-btn:hover {
             border-color: var(--accent);
             background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Glowing avatar ring */
+        .profile-avatar-wrap {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--accent), #00f2fe, var(--accent));
+            animation: spinRing 5s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-btn:hover .profile-avatar-ring {
+            opacity: 1;
+        }
+
+        .profile-section.active .profile-avatar-ring {
+            opacity: 1;
+        }
+
+        @keyframes spinRing {
+            to { transform: rotate(360deg); }
         }
 
         .profile-avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--accent);
+            position: relative;
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a8841a 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0a0a0a;
-            font-weight: 600;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
             font-size: 14px;
+            letter-spacing: 0;
+            border: 2px solid var(--bg-primary);
+            z-index: 1;
         }
 
         .profile-name {
             font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            color: #f1f5f9;
             max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
+        .profile-chevron {
+            font-size: 10px;
+            color: #94a3b8;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-section.active .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* ---- Premium Dropdown Panel ---- */
         .profile-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 10px);
             right: 0;
-            margin-top: 8px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            min-width: 200px;
+            background: rgba(12, 16, 27, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            border-radius: 18px;
+            min-width: 260px;
             overflow: hidden;
-            display: none;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px) scale(0.97);
+            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
         }
 
         .profile-section.active .profile-dropdown {
-            display: block;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Profile card header inside dropdown */
+        .dropdown-header {
+            padding: 20px 20px 16px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(0,242,254,0.05) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .dropdown-avatar-lg {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a8841a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(212,175,55,0.35);
+        }
+
+        .dropdown-user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dropdown-user-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-user-email {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-badge {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.08) 100%);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        /* Dropdown nav items */
+        .dropdown-nav {
+            padding: 8px;
         }
 
         .dropdown-item {
-            padding: 12px 16px;
+            padding: 11px 14px;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--text-secondary);
+            color: #cbd5e1;
             text-decoration: none;
-            font-size: 13px;
-            transition: background 0.2s;
+            font-size: 13.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
+        .dropdown-item .di-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
         .dropdown-item:hover {
-            background: var(--bg-tertiary);
+            background: rgba(212, 175, 55, 0.08);
+            color: #fff;
+        }
+
+        .dropdown-item:hover .di-icon {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent);
+        }
+
+        .dropdown-item.danger {
+            color: #f44336;
+        }
+
+        .dropdown-item.danger .di-icon {
+            color: #f44336;
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .dropdown-item.danger:hover .di-icon {
+            background: rgba(244, 67, 54, 0.15);
         }
 
         .dropdown-divider {
             height: 1px;
-            background: var(--border-color);
-            margin: 4px 0;
+            background: rgba(255,255,255,0.06);
+            margin: 4px 8px;
         }
 
         /* Auth buttons */
@@ -380,10 +571,38 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .upload-area:hover {
             border-color: var(--accent);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* File Preview */
+        .file-preview {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .file-preview img,
+        .file-preview video {
+            max-height: 200px;
+            border-radius: 8px;
+            max-width: 100%;
+        }
+
+        .file-preview .file-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
         }
 
         textarea {
@@ -452,6 +671,7 @@
             gap: 12px;
             justify-content: center;
             margin-top: 16px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -537,6 +757,11 @@
             z-index: 1100;
             animation: slideUp 0.3s ease;
             color: var(--text-secondary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast-error {
+            border-left-color: var(--error);
         }
 
         @keyframes slideUp {
@@ -566,8 +791,26 @@
             z-index: 1000;
             border: none;
             font-size: 20px;
+            transition: all 0.2s;
         }
-        
+
+        .feedback-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Keyboard shortcut hint */
+        .shortcut-hint {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.5;
+            text-align: right;
+            z-index: 999;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             .logo-image {
                 height: 32px;
@@ -575,40 +818,53 @@
             .logo-text {
                 font-size: 16px;
             }
-            .logo-text span {
-                font-size: 10px;
+            
+            .hamburger {
+                display: flex;
             }
-        }
-
-        @media (max-width: 768px) {
+            
             .sidebar {
                 transform: translateX(100%);
                 width: 280px;
             }
+            
             .sidebar.open {
                 transform: translateX(0);
             }
+            
             .main-content {
                 margin-right: 0;
                 padding: 16px;
             }
+            
             .tabs {
                 flex-wrap: wrap;
             }
+            
             .right-header {
                 flex-wrap: wrap;
             }
+            
+            .shortcut-hint {
+                display: none;
+            }
         }
     </style>
+    <link rel="stylesheet" href="style-enhancements.css">
 </head>
 <body>
 <div class="app-container">
     <div class="main-content">
         <div class="header">
-            <a href="/" class="logo-link">
-                <img src="/logo.png" alt="REALYTICS Logo" class="logo-image">
-                <span class="logo-text">REALYTICS</span>
-            </a>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+                    <span></span><span></span><span></span>
+                </button>
+                <a href="/" class="logo-link">
+                    <img src="/logo.png" alt="REALYTICS Logo" class="logo-image">
+                    <span class="logo-text">REALYTICS</span>
+                </a>
+            </div>
             <div class="right-header">
                 <!-- Model Status Indicator -->
                 <div id="modelStatus" class="model-status">
@@ -627,21 +883,38 @@
                     
                     <div id="loggedIn" class="profile-section" style="display: none;">
                         <div class="profile-btn" id="profileBtn">
-                            <div class="profile-avatar" id="userAvatar">U</div>
+                            <div class="profile-avatar-wrap">
+                                <div class="profile-avatar-ring"></div>
+                                <div class="profile-avatar" id="userAvatar">U</div>
+                            </div>
                             <span class="profile-name" id="userName">User</span>
-                            <span>▼</span>
+                            <i class="fa-solid fa-chevron-down profile-chevron"></i>
                         </div>
                         <div class="profile-dropdown" id="profileDropdown">
-                            <div class="dropdown-item" id="profileEmail" style="opacity: 0.7; cursor: default;">
-                                📧 <span id="userEmailDisplay">user@example.com</span>
+                            <!-- Header card -->
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar-lg" id="userAvatarLg">U</div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-user-name" id="userNameDisplay">User</div>
+                                    <div class="dropdown-user-email" id="userEmailDisplay">user@example.com</div>
+                                </div>
+                                <div class="dropdown-badge">PRO</div>
                             </div>
-                            <div class="dropdown-divider"></div>
-                            <a href="/dashboard" class="dropdown-item">
-                                📊 Dashboard
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" id="logoutBtn">
-                                🚪 Sign Out
+                            <!-- Nav items -->
+                            <div class="dropdown-nav">
+                                <a href="/dashboard" class="dropdown-item">
+                                    <span class="di-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                    Dashboard
+                                </a>
+                                <a href="/app" class="dropdown-item">
+                                    <span class="di-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    New Analysis
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-item danger" id="logoutBtn">
+                                    <span class="di-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                                    Sign Out
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -656,32 +929,32 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" data-tab="image">🖼️ Image</button>
-            <button class="tab-btn" data-tab="video">🎬 Video</button>
-            <button class="tab-btn" data-tab="text">📝 Text</button>
+            <button class="tab-btn active" data-tab="image"><i class="fa-solid fa-image"></i> Image</button>
+            <button class="tab-btn" data-tab="video"><i class="fa-solid fa-film"></i> Video</button>
+            <button class="tab-btn" data-tab="text"><i class="fa-solid fa-file-lines"></i> Text</button>
         </div>
 
         <div id="imageTab" class="tab-content active">
             <div class="upload-area" id="imageUpload">
-                <div style="font-size: 48px; margin-bottom: 16px;">📸</div>
-                <p>Click or drag an image here</p>
-                <p style="font-size: 12px; margin-top: 8px;">JPG, PNG, WebP up to 16MB</p>
+                <div style="font-size: 44px; margin-bottom: 16px; color: var(--accent);"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <p style="font-weight: 600; font-size: 16px; color: var(--text-primary);">Click or drag an image here</p>
+                <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">JPG, PNG, WebP up to 16MB</p>
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
             </div>
         </div>
 
         <div id="videoTab" class="tab-content" style="display: none;">
             <div class="upload-area" id="videoUpload">
-                <div style="font-size: 48px; margin-bottom: 16px;">🎬</div>
-                <p>Click or drag a video here</p>
-                <p style="font-size: 12px; margin-top: 8px;">MP4, AVI, MOV up to 100MB</p>
+                <div style="font-size: 44px; margin-bottom: 16px; color: var(--accent);"><i class="fa-solid fa-video"></i></div>
+                <p style="font-weight: 600; font-size: 16px; color: var(--text-primary);">Click or drag a video here</p>
+                <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">MP4, AVI, MOV up to 100MB</p>
                 <input type="file" id="videoInput" accept="video/*" style="display: none;">
             </div>
         </div>
 
         <div id="textTab" class="tab-content" style="display: none;">
-            <textarea id="textInput" rows="6" placeholder="Paste text here to analyze..."></textarea>
-            <button id="analyzeTextBtn" class="btn-primary" style="margin-top: 16px; width: 100%;">Analyze Text</button>
+            <textarea id="textInput" rows="6" placeholder="Paste text here to analyze... (Ctrl+Enter to analyze)"></textarea>
+            <button id="analyzeTextBtn" class="btn-primary" style="margin-top: 16px; width: 100%;"><i class="fa-solid fa-bolt"></i> Analyze Text</button>
         </div>
 
         <div id="loading" class="loading" style="display: none;">
@@ -699,7 +972,7 @@
         </div>
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <h3>Recent Analyses</h3>
         <div id="recentHistory" class="history-list">
             <div class="skeleton" style="height: 80px; margin-bottom: 12px;"></div>
@@ -712,11 +985,36 @@
 
 <button class="feedback-btn" id="feedbackBtn">💬</button>
 
+<div class="shortcut-hint">
+    ⌨️ Ctrl+Enter to analyze<br>
+    Ctrl+D for dashboard
+</div>
+
 <script>
     const API_BASE = '';
     let currentUser = null;
     let remainingTrials = 1;
     
+    // ============================================================================
+    // Sidebar Toggle
+    // ============================================================================
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('hamburger').classList.toggle('active');
+    }
+
+    // Close sidebar on outside click (mobile)
+    document.addEventListener('click', (e) => {
+        const sidebar = document.getElementById('sidebar');
+        const hamburger = document.getElementById('hamburger');
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('active');
+            }
+        }
+    });
+
     // ============================================================================
     // Model Status Check
     // ============================================================================
@@ -774,9 +1072,17 @@
         
         const email = user.email;
         const initial = email.charAt(0).toUpperCase();
+        const displayName = email.split('@')[0];
+
         document.getElementById('userAvatar').textContent = initial;
-        document.getElementById('userName').textContent = email.split('@')[0];
+        document.getElementById('userName').textContent = displayName;
         document.getElementById('userEmailDisplay').textContent = email;
+
+        // Sync new premium dropdown elements
+        const avatarLg = document.getElementById('userAvatarLg');
+        if (avatarLg) avatarLg.textContent = initial;
+        const nameDisplay = document.getElementById('userNameDisplay');
+        if (nameDisplay) nameDisplay.textContent = displayName;
     }
     
     function showLoggedOutUI() {
@@ -809,6 +1115,36 @@
         }
     }
     
+    // ============================================================================
+    // File Preview
+    // ============================================================================
+    function showFilePreview(file) {
+        const oldPreview = document.getElementById('filePreview');
+        if (oldPreview) oldPreview.remove();
+        
+        const previewContainer = document.createElement('div');
+        previewContainer.id = 'filePreview';
+        previewContainer.className = 'file-preview';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (file.type.startsWith('image/')) {
+                previewContainer.innerHTML = `
+                    <img src="${e.target.result}" alt="${file.name}">
+                    <div class="file-info">${file.name} (${(file.size/1024).toFixed(1)} KB)</div>
+                `;
+            } else if (file.type.startsWith('video/')) {
+                previewContainer.innerHTML = `
+                    <video controls src="${e.target.result}"></video>
+                    <div class="file-info">${file.name} (${(file.size/1024/1024).toFixed(1)} MB)</div>
+                `;
+            }
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.parentNode.insertBefore(previewContainer, uploadArea.nextSibling);
+        };
+        reader.readAsDataURL(file);
+    }
+
     // ============================================================================
     // Analysis Functions
     // ============================================================================
@@ -852,6 +1188,7 @@
     }
     
     async function analyzeImage(file) {
+        showFilePreview(file);
         const formData = new FormData();
         formData.append('file', file);
         formData.append('type', 'image');
@@ -859,6 +1196,7 @@
     }
     
     async function analyzeVideo(file) {
+        showFilePreview(file);
         const formData = new FormData();
         formData.append('file', file);
         formData.append('type', 'video');
@@ -870,6 +1208,22 @@
         formData.append('text', text);
         formData.append('type', 'text');
         await performAnalysis(formData);
+    }
+
+    // ============================================================================
+    // Reset Analysis
+    // ============================================================================
+    function resetAnalysis() {
+        document.getElementById('resultArea').innerHTML = '';
+        document.getElementById('filePreview')?.remove();
+        document.getElementById('imageInput').value = '';
+        document.getElementById('videoInput').value = '';
+        document.getElementById('textInput').value = '';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-tab="image"]').classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        document.getElementById('imageTab').style.display = 'block';
+        showToast('Ready for new analysis');
     }
     
     function displayResult(data) {
@@ -889,8 +1243,9 @@
                 <div class="action-buttons">
                     <button class="action-btn" onclick="copyResult('${isAI ? 'AI-GENERATED' : 'HUMAN-CREATED'}', '${confidence}')">📋 Copy</button>
                     <button class="action-btn" onclick="shareResult('${isAI ? 'AI-GENERATED' : 'HUMAN-CREATED'}', '${confidence}')">📤 Share</button>
+                    <button class="action-btn" onclick="resetAnalysis()">🔄 New Analysis</button>
                 </div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px;">${currentUser ? 'Analysis saved to your history' : 'Create an account to save your history'}</p>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px;">${currentUser ? '✅ Analysis saved to your history' : '🔓 Create an account to save your history'}</p>
             </div>
         `;
     }
@@ -932,7 +1287,7 @@
                 return;
             }
             container.innerHTML = history.slice(0, 5).map(item => `
-                <div class="history-item">
+                <div class="history-item" onclick="window.location.href='/dashboard'">
                     <div class="history-badge ${item.is_ai ? 'ai' : 'human'}">
                         ${item.is_ai ? 'AI' : 'Human'}
                     </div>
@@ -948,9 +1303,9 @@
     // ============================================================================
     // Toast
     // ============================================================================
-    function showToast(message) {
+    function showToast(message, isError = false) {
         const toast = document.createElement('div');
-        toast.className = 'toast';
+        toast.className = 'toast' + (isError ? ' toast-error' : '');
         toast.textContent = message;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
@@ -1028,6 +1383,8 @@
             const tab = btn.dataset.tab;
             document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
             document.getElementById(`${tab}Tab`).style.display = 'block';
+            // Clear preview when switching tabs
+            document.getElementById('filePreview')?.remove();
         });
     });
     
@@ -1042,30 +1399,77 @@
     imageUpload.addEventListener('click', () => imageInput.click());
     videoUpload.addEventListener('click', () => videoInput.click());
     
-    imageUpload.addEventListener('dragover', (e) => { e.preventDefault(); imageUpload.style.borderColor = 'var(--accent)'; });
-    imageUpload.addEventListener('dragleave', () => { imageUpload.style.borderColor = 'var(--border-color)'; });
+    imageUpload.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        imageUpload.classList.add('dragover');
+    });
+    
+    imageUpload.addEventListener('dragleave', () => { 
+        imageUpload.classList.remove('dragover');
+    });
+    
     imageUpload.addEventListener('drop', (e) => {
         e.preventDefault();
-        imageUpload.style.borderColor = 'var(--border-color)';
+        imageUpload.classList.remove('dragover');
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) analyzeImage(file);
     });
     
-    videoUpload.addEventListener('dragover', (e) => { e.preventDefault(); videoUpload.style.borderColor = 'var(--accent)'; });
-    videoUpload.addEventListener('dragleave', () => { videoUpload.style.borderColor = 'var(--border-color)'; });
+    videoUpload.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        videoUpload.classList.add('dragover');
+    });
+    
+    videoUpload.addEventListener('dragleave', () => { 
+        videoUpload.classList.remove('dragover');
+    });
+    
     videoUpload.addEventListener('drop', (e) => {
         e.preventDefault();
-        videoUpload.style.borderColor = 'var(--border-color)';
+        videoUpload.classList.remove('dragover');
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('video/')) analyzeVideo(file);
     });
     
-    imageInput.addEventListener('change', (e) => { if (e.target.files[0]) analyzeImage(e.target.files[0]); });
-    videoInput.addEventListener('change', (e) => { if (e.target.files[0]) analyzeVideo(e.target.files[0]); });
+    imageInput.addEventListener('change', (e) => { 
+        if (e.target.files[0]) analyzeImage(e.target.files[0]); 
+    });
+    
+    videoInput.addEventListener('change', (e) => { 
+        if (e.target.files[0]) analyzeVideo(e.target.files[0]); 
+    });
     
     document.getElementById('analyzeTextBtn').addEventListener('click', () => {
         const text = document.getElementById('textInput').value.trim();
         if (text) analyzeText(text);
+    });
+
+    // ============================================================================
+    // Keyboard Shortcuts
+    // ============================================================================
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+Enter - Analyze text
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            const text = document.getElementById('textInput')?.value.trim();
+            if (text && document.getElementById('textTab').style.display !== 'none') {
+                analyzeText(text);
+            }
+        }
+        // Ctrl+D - Dashboard
+        if (e.ctrlKey && e.key === 'd') {
+            e.preventDefault();
+            window.location.href = '/dashboard';
+        }
+        // Escape - Close sidebar on mobile
+        if (e.key === 'Escape') {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburger');
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                hamburger.classList.remove('active');
+            }
+        }
     });
     
     // ============================================================================
@@ -1095,5 +1499,7 @@
     // Refresh model status every 30 seconds
     setInterval(checkModelStatus, 30000);
 </script>
+<script src="bg-animation.js"></script>
+<script src="profile-features.js"></script>
 </body>
 </html>
