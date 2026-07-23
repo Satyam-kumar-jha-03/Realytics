@@ -69,20 +69,6 @@
             gap: 20px;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: -0.5px;
-            text-decoration: none;
-        }
-
-        .logo span {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--text-muted);
-            display: block;
-        }
         .logo-image {
             height: 40px;
             width: auto;
@@ -102,11 +88,19 @@
             color: var(--accent);
         }
 
+        .logo-text span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+            display: block;
+        }
+
         /* Right side group */
         .right-group {
             display: flex;
             align-items: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         /* Model Status Indicator */
@@ -163,7 +157,9 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Profile Section */
+        /* ============================================
+           PREMIUM PROFILE SECTION
+        ============================================ */
         .profile-section {
             position: relative;
         }
@@ -172,84 +168,209 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 12px 6px 8px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            padding: 5px 14px 5px 5px;
+            background: rgba(22, 27, 41, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 40px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
         }
 
         .profile-btn:hover {
             border-color: var(--accent);
             background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.2);
         }
 
+        .profile-avatar-wrap {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--accent), #00f2fe, var(--accent));
+            animation: spinRing 5s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-btn:hover .profile-avatar-ring { opacity: 1; }
+        .profile-section.active .profile-avatar-ring { opacity: 1; }
+
+        @keyframes spinRing { to { transform: rotate(360deg); } }
+
         .profile-avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--accent);
+            position: relative;
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a8841a 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0a0a0a;
-            font-weight: 600;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
             font-size: 14px;
+            border: 2px solid var(--bg-primary);
+            z-index: 1;
         }
 
         .profile-name {
             font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            color: #f1f5f9;
             max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
+        .profile-chevron {
+            font-size: 10px;
+            color: #94a3b8;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-section.active .profile-chevron { transform: rotate(180deg); }
+
         .profile-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 10px);
             right: 0;
-            margin-top: 8px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            min-width: 200px;
+            background: rgba(12, 16, 27, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            border-radius: 18px;
+            min-width: 260px;
             overflow: hidden;
-            display: none;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px) scale(0.97);
+            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
         }
 
         .profile-section.active .profile-dropdown {
-            display: block;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
         }
 
+        .dropdown-header {
+            padding: 20px 20px 16px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(0,242,254,0.05) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .dropdown-avatar-lg {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a8841a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(212,175,55,0.35);
+        }
+
+        .dropdown-user-info { flex: 1; min-width: 0; }
+
+        .dropdown-user-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-user-email {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-badge {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.08) 100%);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .dropdown-nav { padding: 8px; }
+
         .dropdown-item {
-            padding: 12px 16px;
+            padding: 11px 14px;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: var(--text-secondary);
+            color: #cbd5e1;
             text-decoration: none;
-            font-size: 13px;
-            transition: background 0.2s;
+            font-size: 13.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
-        .dropdown-item:hover {
-            background: var(--bg-tertiary);
+        .dropdown-item .di-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            background: rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
+
+        .dropdown-item:hover { background: rgba(212, 175, 55, 0.08); color: #fff; }
+        .dropdown-item:hover .di-icon { background: rgba(212, 175, 55, 0.15); color: var(--accent); }
+
+        .dropdown-item.danger { color: #f44336; }
+        .dropdown-item.danger .di-icon { color: #f44336; }
+        .dropdown-item.danger:hover { background: rgba(244, 67, 54, 0.1); color: #f44336; }
+        .dropdown-item.danger:hover .di-icon { background: rgba(244, 67, 54, 0.15); }
 
         .dropdown-divider {
             height: 1px;
-            background: var(--border-color);
-            margin: 4px 0;
+            background: rgba(255,255,255,0.06);
+            margin: 4px 8px;
         }
 
-        /* Auth buttons when not logged in */
+        /* Auth buttons */
         .auth-buttons {
             display: flex;
             gap: 12px;
@@ -331,6 +452,7 @@
             margin-top: 32px;
             padding-top: 24px;
             border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
         }
 
         .trust-item {
@@ -352,6 +474,7 @@
             margin-bottom: 24px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .demo-tab {
@@ -387,6 +510,11 @@
 
         .demo-upload:hover {
             border-color: var(--accent);
+        }
+
+        .demo-upload.dragover {
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.05);
         }
 
         /* Stats Section */
@@ -433,9 +561,10 @@
             opacity: 0.7;
         }
 
-        /* FAQ Section */
-        .faq-section {
+        /* Testimonials Section */
+        .testimonials-section {
             padding: 60px 0;
+            border-top: 1px solid var(--border-color);
         }
 
         .section-title {
@@ -444,6 +573,69 @@
             color: var(--text-primary);
             text-align: center;
             margin-bottom: 48px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .testimonial-card .quote {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .testimonial-card .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .testimonial-card .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .testimonial-card .author-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .testimonial-card .author-title {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 60px 0;
+            border-top: 1px solid var(--border-color);
         }
 
         .faq-grid {
@@ -464,6 +656,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            opacity: 0.8;
         }
 
         .faq-answer {
@@ -489,6 +686,7 @@
             z-index: 1100;
             animation: slideIn 0.3s ease;
             color: var(--text-secondary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         @keyframes slideIn {
@@ -513,6 +711,11 @@
             z-index: 1000;
             border: none;
             font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .feedback-btn:hover {
+            transform: scale(1.1);
         }
 
         .footer {
@@ -544,6 +747,10 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
             }
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
             .container {
                 padding: 0 20px;
             }
@@ -554,7 +761,31 @@
                 flex-wrap: wrap;
             }
         }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .stat-number {
+                font-size: 32px;
+            }
+            .demo-tab {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            .trust-badge {
+                gap: 12px;
+            }
+            .trust-item {
+                font-size: 11px;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="style-enhancements.css">
 </head>
 <body>
 
@@ -577,35 +808,45 @@
                 
                 <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
                 
-                <!-- Auth Section - Dynamic based on login state -->
+                <!-- Auth Section -->
                 <div id="authSection">
-                    <!-- Not logged in - show buttons -->
                     <div id="notLoggedIn" class="auth-buttons">
                         <a href="/login" class="btn-outline" style="padding: 8px 16px; text-decoration: none;">Sign in</a>
                         <a href="/register" class="btn-primary" style="padding: 8px 16px; text-decoration: none;">Get Started</a>
                     </div>
                     
-                    <!-- Logged in - show profile -->
                     <div id="loggedIn" class="profile-section" style="display: none;">
                         <div class="profile-btn" id="profileBtn">
-                            <div class="profile-avatar" id="userAvatar">U</div>
+                            <div class="profile-avatar-wrap">
+                                <div class="profile-avatar-ring"></div>
+                                <div class="profile-avatar" id="userAvatar">U</div>
+                            </div>
                             <span class="profile-name" id="userName">User</span>
-                            <span>▼</span>
+                            <i class="fa-solid fa-chevron-down profile-chevron"></i>
                         </div>
                         <div class="profile-dropdown" id="profileDropdown">
-                            <div class="dropdown-item" id="profileEmail" style="opacity: 0.7; cursor: default;">
-                                📧 <span id="userEmailDisplay">user@example.com</span>
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar-lg" id="userAvatarLg">U</div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-user-name" id="userNameDisplay">User</div>
+                                    <div class="dropdown-user-email" id="userEmailDisplay">user@example.com</div>
+                                </div>
+                                <div class="dropdown-badge">PRO</div>
                             </div>
-                            <div class="dropdown-divider"></div>
-                            <a href="/dashboard" class="dropdown-item">
-                                📊 Dashboard
-                            </a>
-                            <a href="/app" class="dropdown-item">
-                                🔍 New Analysis
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" id="logoutBtn">
-                                🚪 Sign Out
+                            <div class="dropdown-nav">
+                                <a href="/dashboard" class="dropdown-item">
+                                    <span class="di-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                    Dashboard
+                                </a>
+                                <a href="/app" class="dropdown-item">
+                                    <span class="di-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    New Analysis
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-item danger" id="logoutBtn">
+                                    <span class="di-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                                    Sign Out
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -626,19 +867,20 @@
                         <div class="trust-item">✓ SOC 2 Type II</div>
                         <div class="trust-item">✓ GDPR Compliant</div>
                         <div class="trust-item">✓ Enterprise Ready</div>
+                        <div class="trust-item">✓ 96% Accuracy</div>
                     </div>
                 </div>
                 <div class="live-demo">
                     <div class="demo-tabs">
-                        <button class="demo-tab active" data-demo="image">Image</button>
-                        <button class="demo-tab" data-demo="video">Video</button>
-                        <button class="demo-tab" data-demo="text">Text</button>
+                        <button class="demo-tab active" data-demo="image"><i class="fa-solid fa-image"></i> Image</button>
+                        <button class="demo-tab" data-demo="video"><i class="fa-solid fa-film"></i> Video</button>
+                        <button class="demo-tab" data-demo="text"><i class="fa-solid fa-file-lines"></i> Text</button>
                     </div>
                     <div class="demo-area" id="demoArea">
                         <div class="demo-upload" id="demoUpload">
-                            <div style="font-size: 48px; margin-bottom: 16px;">📸</div>
-                            <p>Drop an image here or click to upload</p>
-                            <p style="font-size: 12px; margin-top: 8px;">JPG, PNG, WebP up to 16MB</p>
+                            <div style="font-size: 44px; margin-bottom: 16px; color: var(--accent);"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                            <p style="font-weight: 600; font-size: 15px; color: var(--text-primary);">Drop an image here or click to upload</p>
+                            <p style="font-size: 12px; margin-top: 8px; color: var(--text-muted);">JPG, PNG, WebP up to 16MB</p>
                             <input type="file" id="demoFileInput" accept="image/*" style="display: none;">
                         </div>
                         <div id="demoResult" style="display: none; margin-top: 20px;"></div>
@@ -653,24 +895,62 @@
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">96%</div>
+                    <div class="stat-number" id="statAccuracy" data-target="96">0%</div>
                     <div class="stat-label">Detection Accuracy</div>
                     <div class="stat-note">On real-world test data</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">&lt;3 sec</div>
-                    <div class="stat-label">Image Analysis</div>
-                    <div class="stat-note">Average processing time</div>
+                    <div class="stat-number" id="statImages" data-target="15000">0+</div>
+                    <div class="stat-label">Images Analyzed</div>
+                    <div class="stat-note">And counting</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">&lt;10 sec</div>
-                    <div class="stat-label">Video Analysis</div>
-                    <div class="stat-note">Depends on file size</div>
+                    <div class="stat-number" id="statUsers" data-target="0">0</div>
+                    <div class="stat-label">Active Users</div>
+                    <div class="stat-note">Growing community</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">1 free</div>
-                    <div class="stat-label">Trial Analysis</div>
-                    <div class="stat-note">Then create free account</div>
+                    <div class="stat-number" id="statTime" data-target="3">0s</div>
+                    <div class="stat-label">Average Analysis</div>
+                    <div class="stat-note">Fast and reliable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="testimonials-section" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">Trusted by Professionals</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="quote">"REALYTICS helped us identify AI-generated content in our newsroom. Essential tool for modern journalism."</p>
+                    <div class="author">
+                        <div class="author-avatar">JD</div>
+                        <div>
+                            <div class="author-name">John Doe</div>
+                            <div class="author-title">News Editor, TechCrunch</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="quote">"The accuracy is remarkable. We've integrated REALYTICS into our content moderation pipeline with great results."</p>
+                    <div class="author">
+                        <div class="author-avatar">SM</div>
+                        <div>
+                            <div class="author-name">Sarah Miller</div>
+                            <div class="author-title">CTO, TrustVerify</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="quote">"Simple, fast, and reliable. REALYTICS is our go-to tool for deepfake detection in security operations."</p>
+                    <div class="author">
+                        <div class="author-avatar">AK</div>
+                        <div>
+                            <div class="author-name">Alex Kumar</div>
+                            <div class="author-title">Security Lead, CyberShield</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -784,12 +1064,19 @@
         const loggedInDiv = document.getElementById('loggedIn');
         loggedInDiv.style.display = 'block';
         
-        // Get initials for avatar
         const email = user.email;
         const initial = email.charAt(0).toUpperCase();
+        const displayName = email.split('@')[0];
+
         document.getElementById('userAvatar').textContent = initial;
-        document.getElementById('userName').textContent = email.split('@')[0];
+        document.getElementById('userName').textContent = displayName;
         document.getElementById('userEmailDisplay').textContent = email;
+
+        // Sync new premium dropdown elements
+        const avatarLg = document.getElementById('userAvatarLg');
+        if (avatarLg) avatarLg.textContent = initial;
+        const nameDisplay = document.getElementById('userNameDisplay');
+        if (nameDisplay) nameDisplay.textContent = displayName;
     }
     
     function showLoggedOutUI() {
@@ -798,7 +1085,7 @@
     }
     
     // ============================================================================
-    // Toast Notification
+    // Toast
     // ============================================================================
     function showToast(message) {
         const toast = document.createElement('div');
@@ -834,7 +1121,7 @@
     });
     
     // ============================================================================
-    // Theme Toggle
+    // Theme
     // ============================================================================
     function initTheme() {
         const saved = localStorage.getItem('theme');
@@ -863,7 +1150,63 @@
     });
     
     // ============================================================================
-    // Feedback Button
+    // Animated Stats
+    // ============================================================================
+    function animateCounter(elementId, target, duration = 2000) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        const start = 0;
+        const startTime = performance.now();
+        
+        function updateCounter(currentTime) {
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const current = Math.floor(progress * target);
+            
+            if (target === 0) {
+                element.textContent = '0';
+            } else if (target > 100) {
+                element.textContent = current + '+';
+            } else if (target === 3) {
+                element.textContent = '<' + current + 's';
+            } else {
+                element.textContent = current + '%';
+            }
+            
+            if (progress < 1 && target > 0) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                if (target === 0) {
+                    element.textContent = '0';
+                } else if (target > 100) {
+                    element.textContent = target + '+';
+                } else if (target === 3) {
+                    element.textContent = '<' + target + 's';
+                } else {
+                    element.textContent = target + '%';
+                }
+            }
+        }
+        requestAnimationFrame(updateCounter);
+    }
+
+    function setupStatsAnimation() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    animateCounter(entry.target.id, target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+            observer.observe(el);
+        });
+    }
+    
+    // ============================================================================
+    // Feedback
     // ============================================================================
     document.getElementById('feedbackBtn').addEventListener('click', () => {
         const feedback = prompt('Share your feedback to help us improve REALYTICS:');
@@ -878,8 +1221,14 @@
     document.querySelectorAll('.faq-question').forEach(q => {
         q.addEventListener('click', () => {
             const answer = q.nextElementSibling;
-            answer.classList.toggle('active');
-            q.querySelector('span').textContent = answer.classList.contains('active') ? '−' : '+';
+            const isActive = answer.classList.contains('active');
+            // Close all others
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('active'));
+            document.querySelectorAll('.faq-question span').forEach(s => s.textContent = '+');
+            if (!isActive) {
+                answer.classList.add('active');
+                q.querySelector('span').textContent = '−';
+            }
         });
     });
     
@@ -891,27 +1240,55 @@
         const demoFileInput = document.getElementById('demoFileInput');
         if (demoUpload && demoFileInput) {
             demoUpload.addEventListener('click', () => demoFileInput.click());
+            
+            demoUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                demoUpload.classList.add('dragover');
+            });
+            
+            demoUpload.addEventListener('dragleave', () => {
+                demoUpload.classList.remove('dragover');
+            });
+            
+            demoUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                demoUpload.classList.remove('dragover');
+                if (e.dataTransfer.files[0]) {
+                    handleDemoUpload();
+                }
+            });
+            
             demoFileInput.addEventListener('change', (e) => {
                 if (e.target.files[0]) {
-                    showToast(currentUser ? 'Redirecting to analysis...' : 'Create an account to analyze content');
-                    if (!currentUser) {
-                        setTimeout(() => {
-                            window.location.href = '/register';
-                        }, 1500);
-                    } else {
-                        window.location.href = '/app';
-                    }
+                    handleDemoUpload();
                 }
             });
         }
     }
+
+    function handleDemoUpload() {
+        showToast(currentUser ? 'Redirecting to analysis...' : 'Create an account to analyze content');
+        if (!currentUser) {
+            setTimeout(() => {
+                window.location.href = '/register';
+            }, 1500);
+        } else {
+            setTimeout(() => {
+                window.location.href = '/app';
+            }, 800);
+        }
+    }
     
+    // ============================================================================
+    // Demo Tab Switching
+    // ============================================================================
     document.querySelectorAll('.demo-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             const demoType = tab.dataset.demo;
             const demoArea = document.getElementById('demoArea');
+            
             if (demoType === 'image') {
                 demoArea.innerHTML = `
                     <div class="demo-upload" id="demoUpload">
@@ -936,19 +1313,10 @@
                 setupDemoUpload();
             } else {
                 demoArea.innerHTML = `
-                    <textarea id="demoText" rows="6" placeholder="Paste text here to analyze..." style="width: 100%; padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-secondary); font-family: monospace;"></textarea>
+                    <textarea id="demoText" rows="6" placeholder="Paste text here to analyze..." style="width: 100%; padding: 16px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-secondary); font-family: monospace; resize: vertical;"></textarea>
                     <button id="demoAnalyzeBtn" class="btn-primary" style="margin-top: 16px; width: 100%;">Analyze Text</button>
                 `;
-                document.getElementById('demoAnalyzeBtn')?.addEventListener('click', () => {
-                    showToast(currentUser ? 'Redirecting to analysis...' : 'Create an account to analyze content');
-                    if (!currentUser) {
-                        setTimeout(() => {
-                            window.location.href = '/register';
-                        }, 1500);
-                    } else {
-                        window.location.href = '/app';
-                    }
-                });
+                document.getElementById('demoAnalyzeBtn')?.addEventListener('click', handleDemoUpload);
             }
         });
     });
@@ -960,9 +1328,12 @@
     checkModelStatus();
     checkAuth();
     setupDemoUpload();
+    setupStatsAnimation();
     
     // Refresh model status every 30 seconds
     setInterval(checkModelStatus, 30000);
 </script>
+<script src="bg-animation.js"></script>
+<script src="profile-features.js"></script>
 </body>
 </html>
