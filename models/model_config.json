@@ -1,0 +1,38 @@
+{
+  "img_size": 224,
+  "num_features": 2048,
+  "batch_size": 256,
+  "test_accuracy": 0.958800196647644,
+  "test_loss": 0.22501125931739807,
+  "class_names": [
+    "fake",
+    "real"
+  ],
+  "model_type": "large_dataset",
+  "dataset_info": {
+    "num_samples": 154122,
+    "num_classes": 2,
+    "imbalance_ratio": 1.0165646098288585,
+    "is_video_frames": false
+  },
+  "total_training_time": 9924.650095701218,
+  "augmentation_used": false,
+  "early_stopping_patience": 5,
+  "dropout_rates": {
+    "small_dataset": [
+      0.6,
+      0.5,
+      0.4
+    ],
+    "medium_dataset": [
+      0.5,
+      0.4,
+      0.3
+    ],
+    "large_dataset": [
+      0.4,
+      0.3,
+      0.2
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "img_size": 224,
+  "num_features": 2048,
+  "batch_size": 128,
+  "test_accuracy": 0.875,
+  "test_loss": 0.325,
+  "class_names": ["real", "fake"],
+  "model_type": "large_dataset",
+  "dataset_info": {
+    "num_samples": 2000,
+    "num_classes": 2,
+    "imbalance_ratio": 1.0,
+    "is_video_frames": false
+  },
+  "total_training_time": 245.67,
+  "augmentation_used": false,
+  "early_stopping_patience": 5,
+  "dropout_rates": {
+    "small_dataset": [0.6, 0.5, 0.4],
+    "medium_dataset": [0.5, 0.4, 0.3],
+    "large_dataset": [0.4, 0.3, 0.2]
+  },
+  "ensemble_enabled": true,
+  "ensemble_weights": {
+    "resnet50": 0.4,
+    "efficientnet": 0.4,
+    "vit": 0.2
+  },
+  "feature_extractor": "resnet50",
+  "training_epochs": 10,
+  "best_val_accuracy": 0.875,
+  "best_val_loss": 0.325
+}
