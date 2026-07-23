@@ -10,7 +10,7 @@ PROJECT_ROOT = BACKEND_DIR.parent
 IS_RENDER = os.environ.get('RENDER', False)
 
 # The HTML files are in Frontend/src/imports/
-FRONTEND_DIR = PROJECT_ROOT / "Frontend"  
+FRONTEND_DIR = PROJECT_ROOT / "frontend"  
 
 MODELS_DIR = PROJECT_ROOT / "models"
 UPLOAD_FOLDER = BACKEND_DIR / "uploads"
