@@ -75,7 +75,24 @@ def print_config():
     print("=" * 60)
     print("CONFIGURATION LOADED")
     print("=" * 60)
+    print(f"IS_RENDER: {IS_RENDER}")
+    print(f"PROJECT_ROOT: {PROJECT_ROOT}")
     print(f"FRONTEND_DIR: {FRONTEND_DIR}")
-    print(f"UPLOAD_FOLDER: {UPLOAD_FOLDER}")
-    print(f"FREE_TRIAL_LIMIT: {FREE_TRIAL_LIMIT}")
+    
+    # Check if directory exists
+    dir_exists = FRONTEND_DIR.exists()
+    print(f"📂 FRONTEND_DIR exists?: {dir_exists}")
+    
+    if dir_exists:
+        # List files inside FRONTEND_DIR
+        files = os.listdir(FRONTEND_DIR)
+        print(f"📜 Files found in FRONTEND_DIR: {files}")
+        print(f"📄 'homes.html' in directory?: {'homes.html' in files}")
+    else:
+        # If frontend doesn't exist, check parent folder contents to see if it's named 'Frontend'
+        if PROJECT_ROOT.exists():
+            print(f"⚠️ Parent contents: {os.listdir(PROJECT_ROOT)}")
+            
     print("=" * 60)
+
+print_config()

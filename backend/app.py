@@ -574,6 +574,12 @@ def analyze_video(video_path):
 
 @app.route('/')
 def landing_page():
+    # Verify file existence on every request during debug
+    target = FRONTEND_DIR / 'homes.html'
+    if not target.exists():
+        print(f"❌ 404 ERROR: Could not find {target}")
+        return f"404: File not found at {target}", 404
+        
     return send_from_directory(str(FRONTEND_DIR), 'homes.html')
 
 
