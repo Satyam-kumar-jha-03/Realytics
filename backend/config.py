@@ -6,11 +6,20 @@ CONFIG_DIR = Path(__file__).parent
 BACKEND_DIR = CONFIG_DIR
 PROJECT_ROOT = BACKEND_DIR.parent
 
-# The HTML files are in Frontend/src/imports/
-FRONTEND_DIR = PROJECT_ROOT / "Frontend"
+IS_RENDER = os.environ.get('RENDER', False)
 
-MODELS_DIR = PROJECT_ROOT / "models"
-UPLOAD_FOLDER = BACKEND_DIR / "uploads"
+if IS_RENDER:
+    # On Render, use /tmp for uploads (ephemeral storage)
+    UPLOAD_FOLDER = Path('/tmp/uploads')
+    MODELS_DIR = Path('/tmp/models')
+    DATABASE_URI = 'sqlite:////tmp/analysis.db'
+else:
+    # Local development
+    FRONTEND_DIR = PROJECT_ROOT / "Frontend"
+    UPLOAD_FOLDER = BACKEND_DIR / "uploads"
+    MODELS_DIR = PROJECT_ROOT / "models"
+    DATABASE_URI = f'sqlite:///{BACKEND_DIR}/analysis.db'
+
 DATASET_DIR = PROJECT_ROOT / "dataset"
 
 # Create directories
