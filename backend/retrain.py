@@ -1,145 +1,189 @@
-#!/usr/bin/env python
 """
-Retraining Pipeline for AI vs Human Detector - COMPLETE VERSION
-Triggered when feedback threshold is reached.
-Uses corrected predictions to fine-tune the model.
+Retraining Pipeline for AI vs Human Media Detector
+Triggered when feedback threshold is reached
+Uses corrected labels to fine-tune the model
 """
-import sys
-import json
-import time
-import gc
+
 import pandas as pd
 import numpy as np
-from pathlib import Path
-from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import keras
+import json
+import os
+import sys
+from pathlib import Path
+from datetime import datetime
 
+# Add backend to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from config import MODELS_DIR, BACKEND_DIR, RETRAIN_THRESHOLD
+from config2 import MODELS_DIR, BACKEND_DIR
+from hybrid_train2 import HybridTrainer
 
 
-def collect_corrected_dataset():
-    """Fetch all feedback with corrected_label and create a CSV for retraining."""
-    print("Collecting corrected feedback data...")
+class Retrainer:
+    """Handles retraining of the model using feedback data"""
 
-    try:
-        from app import app
-        from models import db, Feedback, MediaAnalysis
-    except ImportError:
-        print("Cannot import app modules. Make sure you're in the backend directory.")
-        return False
+    def __init__(self):
+        self.models_dir = MODELS_DIR
+        self.model_path = self.models_dir / "image_classifier.keras"
+        self.config_path = self.models_dir / "model_config.json"
+        self.vocab_path = self.models_dir / "label_vocabulary.json"
 
-    with app.app_context():
-        feedbacks = Feedback.query.filter(Feedback.corrected_label.isnot(None)).all()
+    def get_feedback_data(self):
+        """Get feedback data from database with corrected labels"""
+        try:
+            import sqlite3
+            db_path = BACKEND_DIR / "analysis.db"
 
-        if len(feedbacks) < RETRAIN_THRESHOLD:
-            print(f"Only {len(feedbacks)} corrected samples, need {RETRAIN_THRESHOLD}. Skipping retrain.")
-            return False
+            conn = sqlite3.connect(str(db_path))
+            query = """
+                SELECT ma.filename, ma.file_path, f.corrected_label
+                FROM feedback f
+                JOIN media_analysis ma ON f.analysis_id = ma.id
+                WHERE f.corrected_label IS NOT NULL
+            """
+            df = pd.read_sql_query(query, conn)
+            conn.close()
 
-        print(f"Found {len(feedbacks)} corrected samples")
+            if len(df) == 0:
+                return None
 
-        data = []
-        for fb in feedbacks:
-            analysis = MediaAnalysis.query.get(fb.analysis_id)
-            if analysis and analysis.media_type == 'image':
-                img_path = Path(analysis.file_path)
-                if img_path.exists():
-                    label = 'ai' if fb.corrected_label else 'human'
-                    data.append({'img_name': str(img_path), 'tag': label})
+            print(f"📊 Found {len(df)} feedback samples for retraining")
+            return df
 
-        if len(data) < 10:
-            print(f"Only {len(data)} valid images found. Need at least 10 for retraining.")
-            return False
+        except Exception as e:
+            print(f"❌ Error getting feedback data: {e}")
+            return None
 
-        df = pd.DataFrame(data)
-        train_df, test_df = train_test_split(
-            df, test_size=0.2, random_state=42, stratify=df['tag']
+    def prepare_retraining_dataset(self, feedback_df):
+        """Prepare dataset for retraining from feedback"""
+        # Convert to format expected by training script
+        retrain_data = []
+
+        for _, row in feedback_df.iterrows():
+            label = 'fake' if row['corrected_label'] else 'real'
+            retrain_data.append((label, row['file_path']))
+
+        if not retrain_data:
+            return None
+
+        # Create dataframe
+        df = pd.DataFrame(data=retrain_data, columns=['tag', 'img_name'])
+        return df
+
+    def fine_tune_model(self, retrain_df, original_model_path):
+        """Fine-tune the existing model with new data"""
+        print("\n🔄 Starting fine-tuning process...")
+
+        # Load original model
+        model = keras.models.load_model(str(original_model_path))
+        print("✅ Loaded original model")
+
+        # Load configuration
+        with open(self.config_path, 'r') as f:
+            config = json.load(f)
+
+        # Prepare data for fine-tuning
+        trainer = HybridTrainer()
+        label_processor = keras.layers.StringLookup(
+            num_oov_indices=0,
+            vocabulary=np.unique(retrain_df["tag"])
         )
 
-        train_df.to_csv('retrain_train.csv', index=False)
-        test_df.to_csv('retrain_test.csv', index=False)
+        # Extract features from retraining data
+        print("📊 Extracting features from feedback images...")
+        features, labels = trainer.prepare_features(
+            retrain_df, label_processor, augment=True
+        )
 
-        print(f"Created retraining datasets: Train={len(train_df)}, Test={len(test_df)}")
-        return True
+        # Fine-tune the model (only last few layers)
+        print("🔧 Fine-tuning model...")
+        for layer in model.layers[:-3]:
+            layer.trainable = False
 
+        # Recompile with lower learning rate
+        model.compile(
+            loss="sparse_categorical_crossentropy",
+            optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+            metrics=["accuracy"]
+        )
 
-def fine_tune_model():
-    """Fine-tune the existing model with new corrected data."""
-    print("Starting fine-tuning process...")
-    start_time = time.time()
+        # Train on feedback data
+        history = model.fit(
+            features, labels,
+            epochs=10,
+            batch_size=32,
+            validation_split=0.2,
+            verbose=1
+        )
 
-    from hybrid_train import HybridTrainer
+        return model, history
 
-    class FineTuneTrainer(HybridTrainer):
-        def create_dataset_csv(self):
-            print("Using retraining datasets...")
-            if not Path("retrain_train.csv").exists() or not Path("retrain_test.csv").exists():
-                return False
-            import shutil
-            shutil.copy("retrain_train.csv", "train.csv")
-            shutil.copy("retrain_test.csv", "test.csv")
-            return True
+    def retrain(self):
+        """Main retraining function"""
+        print("=" * 60)
+        print("🔄 STARTING RETRAINING PIPELINE")
+        print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("=" * 60)
 
-    print("Starting fine-tuning with new data...")
-
-    keras.backend.clear_session()
-    gc.collect()
-
-    trainer = FineTuneTrainer()
-    trainer.train()
-
-    elapsed = time.time() - start_time
-    print(f"Fine-tuning completed in {elapsed:.2f}s")
-    return True
-
-
-def backup_original_model():
-    """Backup the current model before retraining."""
-    import shutil
-    from datetime import datetime
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_dir = MODELS_DIR / f"backup_{timestamp}"
-    backup_dir.mkdir(exist_ok=True)
-
-    model_files = ['image_classifier.keras', 'model_config.json', 'label_vocabulary.json']
-    for file in model_files:
-        src = MODELS_DIR / file
-        if src.exists():
-            shutil.copy2(src, backup_dir / file)
-
-    print(f"Original model backed up to {backup_dir}")
-    return backup_dir
-
-
-def retrain():
-    """Main retraining function."""
-    print("=" * 60)
-    print("RETRAINING PIPELINE TRIGGERED")
-    print("=" * 60)
-
-    if not collect_corrected_dataset():
-        print("Retraining aborted: insufficient corrected data")
-        return False
-
-    backup_dir = backup_original_model()
-
-    try:
-        success = fine_tune_model()
-        if success:
-            print("Model successfully retrained and saved!")
-            return True
-        else:
-            print("Fine-tuning failed")
+        # Check if original model exists
+        if not self.model_path.exists():
+            print("❌ No original model found. Run hybrid_train.py first.")
             return False
-    except Exception as e:
-        print(f"Retraining error: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+
+        # Get feedback data
+        feedback_df = self.get_feedback_data()
+        if feedback_df is None or len(feedback_df) < 10:
+            print("⚠️ Insufficient feedback data for retraining (need at least 10 samples)")
+            return False
+
+        # Prepare retraining dataset
+        retrain_df = self.prepare_retraining_dataset(feedback_df)
+        if retrain_df is None:
+            print("❌ Failed to prepare retraining dataset")
+            return False
+
+        # Fine-tune model
+        try:
+            model, history = self.fine_tune_model(retrain_df, self.model_path)
+
+            # Save backup of original model
+            backup_path = self.models_dir / f"image_classifier_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.keras"
+            import shutil
+            shutil.copy2(self.model_path, backup_path)
+            print(f"💾 Original model backed up to {backup_path}")
+
+            # Save fine-tuned model
+            model.save(str(self.model_path))
+            print(" Model retrained and saved successfully!")
+
+            # Update config with retraining info
+            with open(self.config_path, 'r') as f:
+                config = json.load(f)
+
+            config['last_retrained'] = datetime.now().isoformat()
+            config['retraining_samples'] = len(retrain_df)
+            config['retraining_history'] = {
+                'final_accuracy': float(history.history['accuracy'][-1]),
+                'final_loss': float(history.history['loss'][-1])
+            }
+
+            with open(self.config_path, 'w') as f:
+                json.dump(config, f, indent=2)
+
+            print("=" * 60)
+            print("✅ RETRAINING COMPLETED SUCCESSFULLY!")
+            print("=" * 60)
+            return True
+
+        except Exception as e:
+            print(f"Retraining failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
 
 
 if __name__ == "__main__":
-    retrain()
+    retrainer = Retrainer()
+    retrainer.retrain()
