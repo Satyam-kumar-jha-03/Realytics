@@ -11,10 +11,10 @@ if __name__ == "__main__":
     from waitress import serve
     
     print("=" * 60)
-    print("🚀 REALYTICS Server (Windows - Waitress)")
+    print(" REALYTICS Server (Windows - Waitress)")
     print("=" * 60)
-    print(f"📍 http://localhost:5000")
-    print(f"📁 Working Directory: {os.getcwd()}")
+    print(f" http://localhost:5000")
+    print(f"Working Directory: {os.getcwd()}")
     print("=" * 60)
     print("Press Ctrl+C to stop the server")
     print("=" * 60)
