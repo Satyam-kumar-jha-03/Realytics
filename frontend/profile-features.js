@@ -195,7 +195,7 @@
             if (!allowed) {
                 const mins = Math.ceil(retryAfterMs / 60000);
                 showProfileToast(
-                    `⏱ Rate limit reached.\nTry again in ${mins} minute${mins === 1 ? '' : 's'}.`,
+                    `Rate limit reached.\nTry again in ${mins} minute${mins === 1 ? '' : 's'}.`,
                     'warning'
                 );
                 return;
@@ -211,14 +211,14 @@
 
             // Validate type
             if (!file.type.startsWith('image/')) {
-                showProfileToast('❌ Only image files are allowed.', 'error');
+                showProfileToast('Only image files are allowed.', 'error');
                 fileInput.value = '';
                 return;
             }
 
             // Validate size (max 2MB)
             if (file.size > 2 * 1024 * 1024) {
-                showProfileToast('❌ Image must be under 2 MB.', 'error');
+                showProfileToast('Image must be under 2 MB.', 'error');
                 fileInput.value = '';
                 return;
             }
@@ -240,7 +240,7 @@
                 updateRateLabel();
                 showProfileToast('✓ Profile photo updated!', 'success');
             };
-            reader.onerror = () => showProfileToast('❌ Failed to read image.', 'error');
+            reader.onerror = () => showProfileToast('Failed to read image.', 'error');
             reader.readAsDataURL(file);
             fileInput.value = '';
         });
@@ -268,7 +268,6 @@
             }
         });
     }
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
